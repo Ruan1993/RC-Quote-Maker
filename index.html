@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RC Quote Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="app-header">
+    <div class="header-content-inner">
+        <div class="brand">RC Quote Maker</div>
+        <div class="actions">
+            <button id="saveQuoteBtn" class="btn primary">Save Quote</button>
+            <button id="downloadPdfBtn" class="btn">Download PDF</button>
+        </div>
+    </div>
+</header>
+<main class="layout">
+<section class="panel form-panel">
+<div class="section-title">Details</div>
+<div class="grid two">
+<div class="field"><label>Logo URL</label><input id="logoUrl" type="text" placeholder="https://example.com/logo.png"></div>
+<div class="field"><label>Company Name</label><input id="companyName" type="text" placeholder="Company"></div>
+<div class="field"><label>Company Email</label><input id="companyEmail" type="email" placeholder="email@example.com"></div>
+<div class="field"><label>Company Phone</label><input id="companyPhone" type="tel" placeholder=""></div>
+<div class="field"><label>Company Address</label><input id="companyAddress" type="text" placeholder=""></div>
+<div class="field"><label>Client Name</label><input id="clientName" type="text" placeholder="Client"></div>
+<div class="field"><label>Client Email</label><input id="clientEmail" type="email" placeholder="email@example.com"></div>
+<div class="field"><label>Client Phone</label><input id="clientPhone" type="tel" placeholder=""></div>
+<div class="field"><label>Client Address</label><input id="clientAddress" type="text" placeholder=""></div>
+<div class="field"><label>Quote #</label><input id="quoteNumber" type="text" placeholder=""></div>
+<div class="field"><label>Date</label><input id="quoteDate" type="date"></div>
+<div class="field"><label>Currency</label>
+<select id="currency">
+<option value="ZAR">ZAR</option>
+<option value="USD">USD</option>
+<option value="EUR">EUR</option>
+<option value="GBP">GBP</option>
+</select>
+</div>
+<div class="field"><label>Tax %</label><input id="taxRate" type="number" step="1" value="0"></div>
+<div class="field"><label><input id="vatNoteToggle" type="checkbox"> All prices are exclusive of VAT.</label></div>
+</div>
+<div class="field"><label>Notes</label><textarea id="notes" rows="3" placeholder=""></textarea></div>
+</section>
+<section class="panel items-panel">
+<div class="section-title">Items</div>
+<div id="itemsContainer" class="items"></div>
+<div class="items-actions">
+<button id="addItemBtn" class="btn">Add Item</button>
+</div>
+</section>
+<section class="panel preview-panel">
+<div class="section-title">Preview</div>
+<div id="quote-preview" class="quote">
+<div class="quote-header">
+<div class="quote-brand">
+<img id="pvCompanyLogo" class="brand-logo" alt="Company Logo" style="display: none;">
+<div id="pvCompanyName" class="brand-name"></div>
+<div id="pvCompanyDetails" class="brand-details"></div>
+</div>
+<div class="quote-meta">
+<div class="meta-row"><span>Quote</span><span id="pvQuoteNumber"></span></div>
+<div class="meta-row"><span>Date</span><span id="pvQuoteDate"></span></div>
+</div>
+</div>
+<div class="quote-to">
+<div class="to-label">Bill To</div>
+<div id="pvClientDetails" class="to-details"></div>
+</div>
+<table class="quote-table">
+<thead>
+<tr>
+<th>Description</th>
+<th>Qty</th>
+<th>Unit Price</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="pvItems"></tbody>
+<tfoot>
+<tr>
+<td colspan="3">Subtotal</td>
+<td id="pvSubtotal"></td>
+</tr>
+<tr>
+<td colspan="3">Tax</td>
+<td id="pvTax"></td>
+</tr>
+<tr>
+<td colspan="3">Total</td>
+<td id="pvGrandTotal" class="total"></td>
+</tr>
+</tfoot>
+</table>
+<div class="quote-notes">
+<div class="notes-label">Notes</div>
+<div id="pvNotes" class="notes-body"></div>
+</div>
+<div id="pvVatNote" class="quote-vat-note"></div>
+</div>
+</section>
+
+<section class="panel quotes-panel">
+<div class="section-title">My Quotes</div>
+<div class="quotes-actions"><button id="refreshQuotesBtn" class="btn">Refresh</button></div>
+<div id="quotesList" class="quotes-list"></div>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase.config.js"></script> 
+<script src="js/firebase.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
