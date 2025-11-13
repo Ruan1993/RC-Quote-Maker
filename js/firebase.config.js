@@ -11,7 +11,7 @@ window.firebaseConfig = {
     projectId: "rc-quote-maker",
     
     // This is typically your project ID + appspot.com
-    storageBucket: "rc-quote-maker.firebasestorage.app",
+    storageBucket: "rc-quote-maker.appspot.com",
     
     // ⚠️ REPLACE THIS NUMBER WITH YOUR ACTUAL SENDER ID
     messagingSenderId: "230900751264",

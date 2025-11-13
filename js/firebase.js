@@ -88,12 +88,17 @@ window.FirebaseService = {
         if (!uid) { resolve([]); return; }
 
         this.db.collection("quotes")
-          .where("uid", "==", uid) // Filter by User ID
-          .orderBy("createdAt","desc")
+          .where("uid", "==", uid)
           .limit(50)
           .get()
           .then(snap=>{
-            const arr=[];snap.forEach(doc=>{arr.push({id:doc.id,quote:doc.data().quote});});resolve(arr);
+            const arr=[];snap.forEach(doc=>{const data=doc.data();arr.push({id:doc.id,quote:data.quote,createdAt:data.createdAt});});
+            arr.sort((a,b)=>{
+              const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+              const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+              return tb - ta;
+            });
+            resolve(arr.map(x=>({id:x.id,quote:x.quote})));
           }).catch(err=>reject(err));
       }catch(e){reject(e);}
     });

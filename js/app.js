@@ -268,13 +268,17 @@ async function onSaveQuote() {
   let uploadSucceeded = false; // Track if the logo was successfully uploaded
 
   try {
-    // Handle Logo Upload if a new file has been selected
     if (state.company.logoFile) {
       el.saveQuoteBtn.textContent = "Uploading Logo...";
-      const logoUrl = await window.FirebaseService.uploadLogo(state.company.logoFile);
-      state.company.logoUrl = logoUrl; // Update state with the permanent URL
-      state.company.logoFile = null; // Clear the temporary file object
-      uploadSucceeded = true;
+      try {
+        const logoUrl = await Promise.race([
+          window.FirebaseService.uploadLogo(state.company.logoFile),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("upload-timeout")), 15000))
+        ]);
+        state.company.logoUrl = logoUrl;
+        uploadSucceeded = true;
+      } catch (e) {}
+      state.company.logoFile = null;
     }
 
     const payload = {
@@ -334,35 +338,46 @@ async function deleteQuoteHandler(docId) {
 async function loadQuotesList(){
   if(!window.FirebaseService||!window.FirebaseService.initialized) return;
   quotesEl.list.innerHTML = "";
-  const items = await window.FirebaseService.listQuotes();
-  items.forEach(doc=>{
-    const card=document.createElement("div");
-    card.className="quote-card";
-    const title=document.createElement("div");
-    title.textContent = doc.quote.meta.quoteNumber || doc.id;
-    const client=document.createElement("div");
-    client.className="meta";
-    client.textContent = doc.quote.client.name || "";
-    const total=document.createElement("div");
-    total.textContent = formatCurrency(doc.quote.totals.total, doc.quote.meta.currency);
-    const loadBtn=document.createElement("button");
-    loadBtn.className="btn";
-    loadBtn.textContent="Load";
-    loadBtn.addEventListener("click",()=>loadQuote(doc));
-    
-    // NEW: Delete button
-    const deleteBtn=document.createElement("button");
-    deleteBtn.className="btn";
-    deleteBtn.textContent="Delete";
-    deleteBtn.addEventListener("click",()=>deleteQuoteHandler(doc.id)); // Use new handler
-    
-    card.appendChild(title);
-    card.appendChild(client);
-    card.appendChild(total);
-    card.appendChild(loadBtn);
-    card.appendChild(deleteBtn); // Append delete button
-    quotesEl.list.appendChild(card);
-  });
+  try{
+    const items = await window.FirebaseService.listQuotes();
+    items.forEach(doc=>{
+      const card=document.createElement("div");
+      card.className="quote-card";
+      const title=document.createElement("div");
+      title.textContent = doc.quote.meta.quoteNumber || doc.id;
+      const client=document.createElement("div");
+      client.className="meta";
+      client.textContent = doc.quote.client.name || "";
+      const total=document.createElement("div");
+      total.textContent = formatCurrency(doc.quote.totals.total, doc.quote.meta.currency);
+      const loadBtn=document.createElement("button");
+      loadBtn.className="btn";
+      loadBtn.textContent="Load";
+      loadBtn.addEventListener("click",()=>loadQuote(doc));
+      const deleteBtn=document.createElement("button");
+      deleteBtn.className="btn";
+      deleteBtn.textContent="Delete";
+      deleteBtn.addEventListener("click",()=>deleteQuoteHandler(doc.id));
+      card.appendChild(title);
+      card.appendChild(client);
+      card.appendChild(total);
+      card.appendChild(loadBtn);
+      card.appendChild(deleteBtn);
+      quotesEl.list.appendChild(card);
+    });
+    if(items.length===0){
+      const empty=document.createElement("div");
+      empty.className="quote-card";
+      empty.textContent="No quotes found for this device/user.";
+      quotesEl.list.appendChild(empty);
+    }
+  }catch(e){
+    console.error("List Quotes Error:", e);
+    const err=document.createElement("div");
+    err.className="quote-card";
+    err.textContent="Failed to load quotes. See console.";
+    quotesEl.list.appendChild(err);
+  }
 }
 
 function setInputValue(input, value){ if(input) input.value = value ?? ""; }
