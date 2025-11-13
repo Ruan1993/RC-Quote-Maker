@@ -10,6 +10,7 @@ const state = {
 const el = {
   // NEW: Logo elements
   logoUrl: document.getElementById("logoUrl"),
+  logoFile: document.getElementById("logoFile"),
   pvCompanyLogo: document.getElementById("pvCompanyLogo"),
   // Existing elements
   companyName: document.getElementById("companyName"),
@@ -42,6 +43,12 @@ const el = {
   pvNotes: document.getElementById("pvNotes")
 };
 const quotesEl={refreshBtn:document.getElementById("refreshQuotesBtn"),list:document.getElementById("quotesList")};
+const previewEl={
+  previewBtn:document.getElementById("previewQuoteBtn"),
+  modal:document.getElementById("previewModal"),
+  closeBtn:document.getElementById("closePreviewBtn"),
+  modalQuoteContainer:document.getElementById("modalQuoteContainer")
+};
 
 function init() {
   const d = new Date();
@@ -60,8 +67,18 @@ function init() {
 }
 
 function bindInputs() {
-  // NEW: Bind input for logoUrl
-  el.logoUrl.addEventListener("input", e => { state.company.logoUrl = e.target.value; renderQuote(); });
+  if (el.logoUrl) {
+    el.logoUrl.addEventListener("input", e => { state.company.logoUrl = e.target.value; renderQuote(); });
+  }
+  if (el.logoFile) {
+    el.logoFile.addEventListener("change", e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      state.company.logoUrl = url;
+      renderQuote();
+    });
+  }
   
   el.companyName.addEventListener("input", e => { state.company.name = e.target.value; renderQuote(); });
   el.companyEmail.addEventListener("input", e => { state.company.email = e.target.value; renderQuote(); });
@@ -81,6 +98,8 @@ function bindInputs() {
   el.downloadPdfBtn.addEventListener("click", downloadPdf);
   el.saveQuoteBtn.addEventListener("click", onSaveQuote);
   if(quotesEl.refreshBtn){quotesEl.refreshBtn.addEventListener("click", loadQuotesList);} 
+  if(previewEl.previewBtn){previewEl.previewBtn.addEventListener("click", openPreview);} 
+  if(previewEl.closeBtn){previewEl.closeBtn.addEventListener("click", closePreview);} 
 }
 
 function addItem() {
@@ -223,7 +242,12 @@ function downloadPdf() {
     html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
-  html2pdf().from(element).set(opt).save();
+  const modalOpen = previewEl.modal && previewEl.modal.style.display === "flex";
+  if(!modalOpen) openPreview();
+  const promise = html2pdf().from(element).set(opt).save();
+  if(!modalOpen && promise && typeof promise.then === "function"){
+    promise.then(()=>{ closePreview(); });
+  }
 }
 
 function toggleSave(enabled) {
@@ -317,3 +341,18 @@ function loadQuote(doc){
 }
 
 document.addEventListener("DOMContentLoaded", init);
+function openPreview(){
+  const elQuote = document.getElementById("quote-preview");
+  if(!elQuote||!previewEl.modalQuoteContainer||!previewEl.modal) return;
+  previewEl.modalQuoteContainer.innerHTML = "";
+  previewEl.modalQuoteContainer.appendChild(elQuote);
+  previewEl.modal.style.display = "flex";
+}
+
+function closePreview(){
+  const elQuote = document.getElementById("quote-preview");
+  const panel = document.querySelector(".preview-panel");
+  if(!elQuote||!panel||!previewEl.modal) return;
+  panel.appendChild(elQuote);
+  previewEl.modal.style.display = "none";
+}
