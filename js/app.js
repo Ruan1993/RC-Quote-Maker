@@ -1,6 +1,6 @@
 const state = {
-  // UPDATED: Added logoUrl
-  company: { name: "", email: "", phone: "", address: "", logoUrl: "" },
+  // UPDATED: Added logoFile to temporarily hold the file object before upload
+  company: { name: "", email: "", phone: "", address: "", logoUrl: "", logoFile: null },
   client: { name: "", email: "", phone: "", address: "" },
   meta: { quoteNumber: "", date: "", currency: "ZAR", taxRate: 0, docId: null, vatExclusive: false },
   items: [],
@@ -8,8 +8,7 @@ const state = {
 };
 
 const el = {
-  // NEW: Logo elements
-  logoUrl: document.getElementById("logoUrl"),
+  // REMOVED: logoUrl input element as it was removed from index.html
   logoFile: document.getElementById("logoFile"),
   pvCompanyLogo: document.getElementById("pvCompanyLogo"),
   // Existing elements
@@ -68,13 +67,16 @@ function init() {
 }
 
 function bindInputs() {
-  if (el.logoUrl) {
-    el.logoUrl.addEventListener("input", e => { state.company.logoUrl = e.target.value; renderQuote(); });
-  }
+  // UPDATED: Handle logo file selection
   if (el.logoFile) {
     el.logoFile.addEventListener("change", e => {
       const file = e.target.files && e.target.files[0];
-      if (!file) return;
+      if (!file) {
+        state.company.logoFile = null;
+        return;
+      }
+      state.company.logoFile = file; // Store the file object for upload later
+      // Set a temporary URL for immediate preview
       const url = URL.createObjectURL(file);
       state.company.logoUrl = url;
       renderQuote();
@@ -170,7 +172,7 @@ function calcTotals() {
 }
 
 function renderQuote() {
-  // NEW: Render logo 
+  // Render logo 
   const logoUrl = state.company.logoUrl;
   if (logoUrl) {
     el.pvCompanyLogo.src = logoUrl;
@@ -262,16 +264,32 @@ function toggleSave(enabled) {
 
 async function onSaveQuote() {
   if (!window.FirebaseService || !window.FirebaseService.initialized) return;
-  const payload = {
-    company: state.company,
-    client: state.client,
-    meta: state.meta,
-    items: state.items,
-    notes: state.notes,
-    totals: calcTotals()
-  };
   el.saveQuoteBtn.disabled = true;
+  let uploadSucceeded = false; // Track if the logo was successfully uploaded
+
   try {
+    // Handle Logo Upload if a new file has been selected
+    if (state.company.logoFile) {
+      el.saveQuoteBtn.textContent = "Uploading Logo...";
+      const logoUrl = await window.FirebaseService.uploadLogo(state.company.logoFile);
+      state.company.logoUrl = logoUrl; // Update state with the permanent URL
+      state.company.logoFile = null; // Clear the temporary file object
+      uploadSucceeded = true;
+    }
+
+    const payload = {
+      company: state.company,
+      client: state.client,
+      meta: state.meta,
+      items: state.items,
+      notes: state.notes,
+      totals: calcTotals()
+    };
+    
+    // Set button text back to default before saving the quote
+    el.saveQuoteBtn.textContent = "Saving Quote...";
+
+    // Save or Update the quote
     if(state.meta.docId){
       await window.FirebaseService.updateQuote(state.meta.docId, payload);
     }else{
@@ -283,9 +301,35 @@ async function onSaveQuote() {
     setTimeout(() => { el.saveQuoteBtn.textContent = "Save Quote"; el.saveQuoteBtn.disabled = false; }, 1200);
   } catch (e) {
     el.saveQuoteBtn.textContent = "Error";
-    setTimeout(() => { el.saveQuoteBtn.textContent = "Save Quote"; el.saveQuoteBtn.disabled = false; }, 1200);
+    console.error("Save Quote Error:", e);
+    // Ensure button is re-enabled and text is reset regardless of whether upload or save failed
+    setTimeout(() => { 
+        el.saveQuoteBtn.textContent = "Save Quote"; 
+        el.saveQuoteBtn.disabled = false; 
+    }, 1200);
   }
 }
+
+// NEW: Handler for the delete button
+async function deleteQuoteHandler(docId) {
+  if (!window.FirebaseService || !window.FirebaseService.initialized || !confirm("Are you sure you want to delete this quote?")) return;
+  
+  try {
+    await window.FirebaseService.deleteQuote(docId);
+    // Reload the list after successful deletion
+    loadQuotesList();
+    
+    // If the deleted quote was the one currently loaded, clear the form
+    if (state.meta.docId === docId) {
+      // Simple reload to reset the state/form
+      window.location.reload(); 
+    }
+  } catch (e) {
+    console.error("Delete Quote Error:", e);
+    alert("Failed to delete quote. Check the console for details.");
+  }
+}
+
 
 async function loadQuotesList(){
   if(!window.FirebaseService||!window.FirebaseService.initialized) return;
@@ -305,10 +349,18 @@ async function loadQuotesList(){
     loadBtn.className="btn";
     loadBtn.textContent="Load";
     loadBtn.addEventListener("click",()=>loadQuote(doc));
+    
+    // NEW: Delete button
+    const deleteBtn=document.createElement("button");
+    deleteBtn.className="btn";
+    deleteBtn.textContent="Delete";
+    deleteBtn.addEventListener("click",()=>deleteQuoteHandler(doc.id)); // Use new handler
+    
     card.appendChild(title);
     card.appendChild(client);
     card.appendChild(total);
     card.appendChild(loadBtn);
+    card.appendChild(deleteBtn); // Append delete button
     quotesEl.list.appendChild(card);
   });
 }
@@ -324,8 +376,10 @@ function loadQuote(doc){
   state.notes = q.notes || "";
   state.meta.docId = doc.id;
   
-  // NEW: Set logo URL input value
-  setInputValue(el.logoUrl, state.company.logoUrl);
+  // The logo file input cannot be programmatically set for security reasons.
+  // The state.company.logoUrl is loaded, which will be rendered by renderQuote().
+  // We explicitly clear the logoFile property if it exists, as it's not persisted.
+  state.company.logoFile = null; 
   
   setInputValue(el.companyName, state.company.name);
   setInputValue(el.companyEmail, state.company.email);
@@ -339,6 +393,7 @@ function loadQuote(doc){
   setInputValue(el.quoteDate, state.meta.date);
   setInputValue(el.taxRate, state.meta.taxRate);
   if(el.currency) el.currency.value = state.meta.currency;
+  // FIX: Ensure VAT checkbox is set from state
   if(el.vatNoteToggle) el.vatNoteToggle.checked = !!state.meta.vatExclusive;
   el.notes.value = state.notes;
   renderItems();
