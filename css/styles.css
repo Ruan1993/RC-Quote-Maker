@@ -1,7 +1,14 @@
 /* css/styles.css */
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0b0f19;color:#e6edf3}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:#0b0f19;
+  color:#e6edf3;
+  /* Keeps the scrollbar fixed, as requested */
+  overflow-x: hidden; 
+}
 /* HEADER: Reverted to full-width but simplified, so it sticks cleanly */
 .app-header{
   /* Ensure the header spans full width of the viewport */
@@ -12,17 +19,15 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
   z-index:10;
 }
 
-/* FIX: Ensure the header's content padding matches the main layout's padding (16px) */
+/* FIX: REMOVED max-width and margin: 0 auto to make the header content full-width/left-aligned */
 .app-header .header-content-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     
-    /* This centers the content and constrains its width */
-    max-width: 1200px; 
-    margin: 0 auto; 
+    /* REMOVED max-width and centering to allow full width */
     width: 100%;
-    padding: 16px; /* CHANGED: Set padding to 16px all around for perfect symmetry with .layout */
+    padding: 16px; 
 }
 
 .brand{font-weight:700;font-size:18px}
@@ -32,15 +37,16 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .btn.primary{background:#3758ff;border-color:#3758ff}
 .btn.primary:hover{background:#2b49e6}
 
-/* LAYOUT: Re-applied standard centering */
+/* LAYOUT: This is the base/mobile style */
 .layout{
   display:grid;
   grid-template-columns:1fr;
   gap:16px;
-  /* CHANGED: Set padding to 16px all around to match the header content's padding */
-  padding:16px; 
-  max-width:1200px;
-  margin:0 auto; /* This centers the main content area */
+  /* Use a viewport-relative unit like vw for the padding to ensure 
+     it scales perfectly to the screen width and doesn't rely on a fixed pixel value */
+  padding: 16px; /* You can change this to 4vw to be truly responsive */
+  
+  /* REMOVED max-width and centering to allow full width */
 }
 
 .panel{background:#0e1324;border:1px solid #1f2533;border-radius:12px;padding:20px} /* Increased padding */
