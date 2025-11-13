@@ -49,6 +49,7 @@ const previewEl={
   closeBtn:document.getElementById("closePreviewBtn"),
   modalQuoteContainer:document.getElementById("modalQuoteContainer")
 };
+const printEl={host:document.getElementById("printHost")};
 
 function init() {
   const d = new Date();
@@ -234,19 +235,23 @@ function formatDate(s) {
 }
 
 function downloadPdf() {
-  const element = document.getElementById("quote-preview");
+  const src = document.getElementById("quote-preview");
+  if(!src) return;
+  const clone = src.cloneNode(true);
+  if(printEl.host){
+    printEl.host.innerHTML = "";
+    printEl.host.appendChild(clone);
+  }
   const opt = {
     margin: 10,
     filename: `Quote-${state.meta.quoteNumber || Date.now()}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
+    image: { type: "png", quality: 1 },
+    html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
-  const modalOpen = previewEl.modal && previewEl.modal.style.display === "flex";
-  if(!modalOpen) openPreview();
-  const promise = html2pdf().from(element).set(opt).save();
-  if(!modalOpen && promise && typeof promise.then === "function"){
-    promise.then(()=>{ closePreview(); });
+  const promise = html2pdf().from(clone).set(opt).save();
+  if(promise && typeof promise.then === "function"){
+    promise.then(()=>{ if(printEl.host) printEl.host.innerHTML = ""; });
   }
 }
 

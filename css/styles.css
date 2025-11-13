@@ -56,16 +56,20 @@ body{
 .field label{font-size:12px;color:#aab4c6}
 .field input,.field select,.field textarea{background:#0b1020;border:1px solid #1f2533;color:#e6edf3;border-radius:8px;padding:10px}
 .items{display:flex;flex-direction:column;gap:12px}
-.item-row{display:grid;grid-template-columns:minmax(240px,1fr) 100px 160px 140px auto;gap:10px}
+.item-row{display:grid;grid-template-columns:1fr;gap:10px}
+.item-row button.btn{justify-self:end}
 .item-row input{width:100%;font-size:14px}
+.item-row input{min-width:0}
 .item-row input[type="number"]{text-align:right}
 .item-total{display:flex;align-items:center;justify-content:flex-end;padding:0 8px;color:#aab4c6}
 .items-actions{display:flex;justify-content:flex-end;margin-top:8px}
 .preview-panel{display:none}
+.print-host{position:fixed;left:-10000px;top:0;width:900px;max-width:900px;background:#ffffff;color:#111;z-index:-1;padding:0}
+.quote{background:#ffffff;color:#111;border-radius:12px;padding:24px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
 .modal-content{background:#0e1324;border:1px solid #1f2533;border-radius:12px;padding:16px;max-height:90vh;overflow:auto}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
-.modal .quote{background:#ffffff;color:#111;border-radius:12px;padding:24px;max-width:800px;margin:0 auto}
+.modal .quote{max-width:800px;margin:0 auto}
 .quote-header{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #f0f0f0;padding-bottom:16px;margin-bottom:16px}
 .brand-logo{max-height:48px;max-width:150px;width:auto;object-fit:contain;margin-bottom:8px;border-radius:6px;object-fit:contain;vertical-align:top;}
 .brand-name{font-weight:700;font-size:20px}
