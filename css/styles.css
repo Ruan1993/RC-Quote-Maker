@@ -11,12 +11,11 @@ body{
 }
 /* HEADER: Reverted to full-width but simplified, so it sticks cleanly */
 .app-header{
-  /* Ensure the header spans full width of the viewport */
   border-bottom:1px solid #1f2533;
   background:#0e1324;
-  position:sticky;
-  top:0;
-  z-index:10;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:200;
 }
 
 /* FIX: REMOVED max-width and margin: 0 auto to make the header content full-width/left-aligned */
@@ -30,12 +29,25 @@ body{
     padding: 16px; 
 }
 
-.brand{font-weight:700;font-size:18px}
+.brand{font-weight:800;font-size:28px;color:#4fd1ff;text-shadow:0 0 6px rgba(79,209,255,0.6),0 0 12px rgba(79,209,255,0.35),0 0 18px rgba(79,209,255,0.2)}
 .actions{display:flex;gap:12px}
 .btn{appearance:none;border:1px solid #2c3345;background:#131a2e;color:#e6edf3;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
 .btn:hover{background:#17203a}
 .btn.primary{background:#3758ff;border-color:#3758ff}
 .btn.primary:hover{background:#2b49e6}
+.btn.danger{background:#e53935;border-color:#e53935;color:#fff}
+.btn.danger:hover{background:#c62828}
+.btn.success{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.btn.success:hover{background:#1b5e20}
+.help{font-size:12px;color:#aab4c6}
+.white-text{color:#ffffff}
+.field label.white-text{color:#ffffff}
+.field-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.back-to-top{position:fixed;right:16px;bottom:16px;z-index:200;display:none}
+.app-footer{border-top:1px solid #1f2533;background:#0e1324;margin-top:24px}
+.app-footer .footer-inner{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding:16px;color:#aab4c6}
+.app-footer a{color:#4fd1ff;text-decoration:none}
+.app-footer a:hover{text-shadow:0 0 6px rgba(79,209,255,0.6)}
 
 /* LAYOUT: This is the base/mobile style */
 .layout{
@@ -45,6 +57,7 @@ body{
   /* Use a viewport-relative unit like vw for the padding to ensure 
      it scales perfectly to the screen width and doesn't rely on a fixed pixel value */
   padding: 16px; /* You can change this to 4vw to be truly responsive */
+  padding-top: 96px;
   
   /* REMOVED max-width and centering to allow full width */
 }
@@ -71,6 +84,7 @@ body{
 .modal-content{background:#0e1324;border:1px solid #1f2533;border-radius:12px;padding:16px;max-height:90vh;overflow:auto}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
 .modal .quote{max-width:800px;margin:0 auto}
+.modal #quote-preview{transform-origin: top center}
 .quote-header{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #f0f0f0;padding-bottom:16px;margin-bottom:16px}
 .brand-logo{max-height:64px;max-width:180px;width:auto;object-fit:contain;margin-bottom:8px;border-radius:6px;object-fit:contain;vertical-align:top;}
 .brand-name{font-weight:700;font-size:20px}

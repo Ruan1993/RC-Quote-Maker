@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RC Quote Maker</title>
-<meta name="description" content="Create professional quotes quickly. Save, preview, and export PDFs.">
+<title>RC Invoice Maker</title>
+<meta name="description" content="Create professional invoices quickly. Save, preview, and export PDFs.">
 <meta name="theme-color" content="#0e1324">
-<link rel="canonical" href="/">
+<link rel="canonical" href="/invoice.html">
 <link rel="icon" href="favicon-v2.svg" type="image/svg+xml">
 <link rel="shortcut icon" href="favicon-v2.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="favicon-v2.svg">
 <link rel="manifest" href="manifest.webmanifest">
-<meta property="og:title" content="RC Quote Maker">
-<meta property="og:description" content="Create professional quotes quickly. Save, preview, and export PDFs.">
+<meta property="og:title" content="RC Invoice Maker">
+<meta property="og:description" content="Create professional invoices quickly. Save, preview, and export PDFs.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,14 +22,14 @@
 <body>
 <header class="app-header">
     <div class="header-content-inner">
-        <div class="brand">RC Quote Maker</div>
+        <div class="brand">RC Invoice Maker</div>
         <div class="actions">
-            <button id="saveQuoteBtn" class="btn primary">Save Quote</button>
+            <button id="saveQuoteBtn" class="btn primary">Save Invoice</button>
             <button id="previewDownloadBtn" class="btn success">Preview & Download</button>
-            <button id="invoiceMakerBtn" class="btn danger">Invoice Maker</button>
+            <button id="quoteMakerBtn" class="btn danger">Quote Maker</button>
         </div>
     </div>
-</header>
+    </header>
 <main class="layout">
 <section class="panel form-panel">
 <div class="section-title">Details</div>
@@ -52,15 +52,9 @@
 <div class="field"><label>Client Phone</label><input id="clientPhone" type="tel" placeholder=""></div>
 <div class="field"><label>Client VAT Number</label><input id="clientVat" type="text" placeholder=""></div>
 <div class="field"><label>Client Address</label><input id="clientAddress" type="text" placeholder=""></div>
-<div class="field"><label>Quote #</label><input id="quoteNumber" type="text" placeholder=""></div>
-<div class="field"><label>Document Type</label>
-  <select id="docType">
-    <option value="Quote">Quote</option>
-    <option value="Estimate">Estimate</option>
-  </select>
-</div>
+<div class="field"><label>Invoice #</label><input id="quoteNumber" type="text" placeholder=""></div>
 <div class="field"><label>Date</label><input id="quoteDate" type="date"></div>
-<div class="field"><label>Valid Until</label><input id="validUntil" type="date"></div>
+<div class="field"><label>Due Date</label><input id="dueDate" type="date"></div>
 <div class="field"><label>Currency</label>
 <select id="currency">
 <option value="ZAR">ZAR</option>
@@ -75,7 +69,7 @@
     <label><input id="vatNoteToggle" type="checkbox"> All prices are exclusive of VAT.</label>
   </div>
   <input id="taxRate" type="number" step="1" value="0">
-  </div>
+</div>
 </div>
 <div class="field">
   <div class="field-row">
@@ -84,38 +78,11 @@
   </div>
   <textarea id="notes" rows="3" placeholder=""></textarea>
 </div>
-<div class="field">
-  <div class="field-row">
-    <label class="white-text">Scope/Inclusions</label>
-    <label><input id="includeInclusions" type="checkbox" checked> Include in Quote</label>
-  </div>
-  <div class="help">List exactly what you will deliver for the quoted price. This sets clear boundaries.</div>
-  <textarea id="inclusions" rows="3" placeholder="Examples:\n• 5-page WordPress website\n• WhatsApp Chatbot integration\n• Mobile responsive layout"></textarea>
-</div>
-<div class="field">
-  <div class="field-row">
-    <label class="white-text">Exclusions</label>
-    <label><input id="includeExclusions" type="checkbox" checked> Include in Quote</label>
-  </div>
-  <div class="help">State what is NOT included. Protects you from scope creep and unpaid work.</div>
-  <textarea id="exclusions" rows="3" placeholder="Common exclusions:\n• Domain & hosting fees\n• Stock images or paid fonts\n• Writing of website copy\n• Ongoing maintenance"></textarea>
-</div>
-<div class="field">
-  <div class="field-row">
-    <label class="white-text">Payment Terms</label>
-    <label><input id="includePaymentTerms" type="checkbox" checked> Include in Quote</label>
-  </div>
-  <div class="help">Explain deposit, final payment and method. Controls your cash flow.</div>
-  <textarea id="paymentTerms" rows="3" placeholder="Standard terms:\n• 50% deposit to start\n• 50% due before handover\n• Payment via EFT"></textarea>
-</div>
-<div class="field">
-  <div class="field-row">
-    <label class="white-text">Acceptance</label>
-    <label><input id="includeAcceptance" type="checkbox" checked> Include in Quote</label>
-  </div>
-  <div class="help">Define how the client formally accepts the quote so it becomes binding.</div>
-  <textarea id="acceptance" rows="2" placeholder="Examples:\n• Sign below or reply 'I accept Quote #101'\n• 50% deposit acts as formal acceptance"></textarea>
-</div>
+<div class="field"><label>Bank Name</label><input id="bankName" type="text" placeholder=""></div>
+<div class="field"><label>Account Name</label><input id="bankAccountName" type="text" placeholder=""></div>
+<div class="field"><label>Account Number</label><input id="bankAccountNumber" type="text" placeholder=""></div>
+<div class="field"><label>Branch Code</label><input id="bankBranchCode" type="text" placeholder=""></div>
+<div class="quotes-actions"><button id="saveBankDetailsBtn" class="btn">Save Banking Details</button></div>
 </section>
 <section class="panel items-panel">
 <div class="section-title">Items/Service</div>
@@ -141,8 +108,9 @@
 <div id="pvCompanyDetails" class="brand-details"></div>
 </div>
 <div class="quote-meta">
-<div class="meta-row"><span id="pvDocLabel">Quote</span><span id="pvQuoteNumber"></span></div>
+<div class="meta-row"><span id="pvDocLabel">Invoice</span><span id="pvQuoteNumber"></span></div>
 <div class="meta-row"><span>Date</span><span id="pvQuoteDate"></span></div>
+<div class="meta-row"><span>Due Date</span><span id="pvDueDate"></span></div>
 </div>
 </div>
 <div class="quote-to">
@@ -179,32 +147,21 @@
 <div id="pvNotes" class="notes-body"></div>
 </div>
 <div class="quote-notes">
-<div class="notes-label">Valid Until</div>
-<div id="pvValidUntil" class="notes-body"></div>
-</div>
-<div class="quote-notes">
-<div class="notes-label">Scope/Inclusions</div>
-<div id="pvInclusions" class="notes-body"></div>
-</div>
-<div class="quote-notes">
-<div class="notes-label">Exclusions</div>
-<div id="pvExclusions" class="notes-body"></div>
-</div>
-<div class="quote-notes">
-<div class="notes-label">Payment Terms</div>
-<div id="pvPaymentTerms" class="notes-body"></div>
-</div>
-<div class="quote-notes">
-<div class="notes-label">Acceptance</div>
-<div id="pvAcceptance" class="notes-body"></div>
+<div class="notes-label">Banking Details</div>
+<div id="pvBankDetails" class="notes-body"></div>
 </div>
 <div id="pvVatNote" class="quote-vat-note"></div>
 </div>
 </section>
 
 <section class="panel quotes-panel">
-<div class="section-title">My Quotes</div>
+<div class="section-title">My Invoices</div>
 <div class="quotes-actions"><button id="refreshQuotesBtn" class="btn">Refresh</button></div>
+<div class="banking-details" style="margin-top:12px">
+  <div class="section-title">Banking Details</div>
+  <div id="bankDetailsView" class="notes-body"></div>
+  <div class="quotes-actions" style="margin-top:8px"><button id="useBankDetailsBtn" class="btn">Add to Invoice</button></div>
+</div>
 <div id="quotesList" class="quotes-list"></div>
 </section>
 </main>
@@ -236,17 +193,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 <script src="js/firebase.config.js"></script> 
 <script src="js/firebase.js"></script>
-<script>window.appMode='quote';</script>
+<script>window.appMode='invoice';</script>
 <script src="js/app.js"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "RC Quote Maker",
-  "description": "Create professional quotes quickly. Save, preview, and export PDFs.",
+  "name": "RC Invoice Maker",
+  "description": "Create professional invoices quickly. Save, preview, and export PDFs.",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
-  "url": "/"
+  "url": "/invoice.html"
+}
 }
 </script>
 </body>

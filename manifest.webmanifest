@@ -1,0 +1,12 @@
+{
+  "name": "RC Quote Maker",
+  "short_name": "Quote Maker",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0e1324",
+  "theme_color": "#0e1324",
+  "icons": [
+    { "src": "favicon-v2.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable any" }
+  ]
+}
